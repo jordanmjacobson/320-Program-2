@@ -10,9 +10,9 @@ private:
 public:
   std::string flag(); //returns flag
   unsigned long long address();
-  void setFlag(string);
+  void setFlag(std::string);
   void setAddress(unsigned long long);
   Line(std::string, unsigned long long);
 
-}
+};
 #endif
