@@ -16,3 +16,5 @@ clean:
 	rm -rf cache-sim output.txt
 run: all
 	./cache-sim trace1.txt output.txt
+gdb: all
+	gdb --args ./cache-sim trace1.txt output.txt
