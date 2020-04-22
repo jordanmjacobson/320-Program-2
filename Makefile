@@ -14,3 +14,5 @@ cache-sim.o: cache-sim.cpp
 clean:
 	rm *.o
 	rm -rf cache-sim output.txt
+run: all
+	./cache-sim trace1.txt output.txt
