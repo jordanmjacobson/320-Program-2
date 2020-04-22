@@ -19,6 +19,10 @@ void Line::setAddress(unsigned long long val){
 void Line::setTag(unsigned long long val){
   this->t = val;
 }
+void Line::setIndex(unsigned long long val){
+  this->index = val;
+}
+
 Line::Line(string str, unsigned long long num){
   this->f = str;
   this->addr = num;

@@ -8,6 +8,7 @@ private:
   std::string f; //the flag
   unsigned long long addr;
   unsigned long long t;
+  unsigned long long index;
 public:
   std::string flag(); //returns flag
   unsigned long long address();
@@ -15,6 +16,7 @@ public:
   void setFlag(std::string);
   void setAddress(unsigned long long);
   void setTag(unsigned long long);
+  void setIndex(unsigned long long);
   Line(std::string, unsigned long long);
 
 };
