@@ -25,7 +25,7 @@ int main(int argc, char * argv[]){
   /*for(int i = 0; i<10; i++){
     cout<<lines[i].flag()<<" "<<lines[i].address()<<endl;
   }*/
-  result dirmap = direct_map(1);
+  result dirmap = direct_map(1024);
   cout<<"Direct map: "<<dirmap.hits<<" "<<dirmap.accesses;
 }
 //shift = 5 because it's 32 bits per cache line
@@ -35,7 +35,7 @@ result direct_map(int size){
   result retval;
   retval.hits = 0;
   retval.accesses = 0;
-  int num_blocks = size/32;
+  unsigned long long num_blocks = size/32;
   Line * cache = nullptr;
   unsigned long long mask = num_blocks-1;
   for(int i=0; i<lines.size();i++){
