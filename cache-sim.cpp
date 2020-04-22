@@ -44,11 +44,11 @@ result direct_map(int size){
     unsigned long long tag = chopped >> (unsigned long long)log2(size);
     lines[i].setIndex(index);
     lines[i].setTag(tag);
-    if(tag == cache[index].tag()){
-      retval.hits++;
+    if(tag != cache[index].tag()){
+      cache[index] = lines[i];
     }
     else{
-      cache[index] = lines[i];
+      retval.hits++;
     }
     retval.accesses++;
   }
