@@ -41,7 +41,7 @@ result direct_map(int size){
   for(int i=0; i<lines.size();i++){
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped % num_blocks;
-    unsigned long long tag = chopped >> (unsigned long long)log2(size);
+    unsigned long long tag = chopped >> (unsigned long long)log2(num_blocks);
     lines[i].setIndex(index);
     lines[i].setTag(tag);
     if(tag != cache[index].tag()){
