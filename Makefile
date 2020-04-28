@@ -5,8 +5,11 @@ all: cache-sim
 Line.o: Line.cpp
 	g++ $(FLAGS) -c Line.cpp -o Line.o
 
-cache-sim: cache-sim.o Line.o
-	g++ $(FLAGS) cache-sim.o Line.o -o cache-sim
+Set.o: Set.cpp
+	g++ $(FLAGS) -c Set.cpp -o Set.o
+
+cache-sim: cache-sim.o Line.o Set.o
+	g++ $(FLAGS) cache-sim.o Line.o Set.o -o cache-sim
 
 cache-sim.o: cache-sim.cpp
 	g++ $(FLAGS) -c cache-sim.cpp -o cache-sim.o
