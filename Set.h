@@ -8,6 +8,7 @@ private:
   bool alloc_on_miss = true;
 public:
 bool insert(Line);
+bool insert_store(Line);
 void set_idles();
 void set_alloc(bool);
 Set(int a);

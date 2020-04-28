@@ -50,6 +50,17 @@ Set::Set(int a){
     ways.push_back(blank);
   }
 }
+bool Set::insert_store(Line my_line){
+  for(int i = 0;i<this->assoc;i++){
+    if(my_line.tag() == this->ways[i].tag()){
+      this->ways[i].update();
+      set_idles();
+      return true;
+    }
+  }
+  set_idles();
+  return false;
+}
 Set::Set(){
 
 }
