@@ -13,6 +13,9 @@ unsigned long long Line::tag(){
 unsigned long long Line::idle(){
   return this->total_idle;
 }
+bool Line::updated(){
+  return this->just_updated;
+}
 void Line::setFlag(string s){
   this->f = s;
 }
@@ -31,6 +34,9 @@ void Line::update(){
 }
 void Line::reset(){
   this->just_updated = false;
+}
+void Line::plus_one(){
+  this->total_idle++;
 }
 
 Line::Line(string str, unsigned long long num){

@@ -49,15 +49,26 @@ int main(int argc, char * argv[]){
   //END OF PART 1
 
   //BEGIN PART 2
-  for (int i = 2; i<=32;i*=2){
-    if(i!=8){
-      result part2 = part2_3(i);
-      cout<<part2.hits<<","<<part2.accesses<<"; ";
-      output<<part2.hits<<","<<part2.accesses<<"; ";
-    }
+  for (int i = 2; i<=16;i*=2){
+    result part2 = part2_3(i);
+    cout<<part2.hits<<","<<part2.accesses<<"; ";
+    output<<part2.hits<<","<<part2.accesses<<"; ";
+
   }
   cout<<endl;
   output<<endl;
+
+  //END OF PART 2
+
+  //BEGIN PART 3a
+  result part3a = part2_3(512);
+  cout<<part3a.hits<<","<<part3a.accesses<<"; ";
+  output<<part3a.hits<<","<<part3a.accesses<<"; ";
+  cout<<endl;
+  output<<endl;
+
+  //END OF PART 3a
+
 }
 //shift = 5 because it's 32 bits per cache line
 //tag  - everything except index, just shift by log2 of num_blocks
@@ -88,26 +99,34 @@ result direct_map(int size){
 }
 result part2_3(int a){
   result retval;
+  unsigned long long set_size = 32 * a;
+  unsigned long long cache_size = 16384/set_size;
   retval.hits = 0;
   retval.accesses = 0;
 
   //num_sets = 512;
-  Set * cache = new Set [512];
+  Set * cache = new Set [cache_size];
+  for (int i = 0; i<cache_size;i++){
+    cache[i] = Set(a);
+  }
   for (unsigned long long i=0;i<lines.size();i++){
     unsigned long long chopped = lines[i].address() >> 5;
-    unsigned long long index = chopped %512;
-    unsigned long long tag = chopped >> (unsigned long long)log2(512);
+    unsigned long long index = chopped %cache_size;
+    unsigned long long tag = chopped >> (unsigned long long)log2(cache_size);
+    //int used = -1;
     lines[i].setIndex(index);
     lines[i].setTag(tag);
     if(cache[index].insert(lines[i])){
       retval.hits++;
+      //lines[i].update();
+      //used = i;
     }
     retval.accesses++;
   }
   delete [] cache;
   return retval;
 }
-result hot_cold (){
+result part3b (){
   int tree [9][my_int];
   //if its a miss, send it a -1, if it's a hit, send it(util) the way that you had a hit on
   //intialize everything to 0...
