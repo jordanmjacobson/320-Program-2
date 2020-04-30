@@ -55,6 +55,8 @@ result direct_map(int);
 result part2_3(int);
 result part3b();
 result part4(int);
+result part5(int);
+result part6(int);
 int main(int argc, char * argv[]){
   ofstream output(argv[2],ofstream::out); //setting up output file object
   string flag;
@@ -128,7 +130,30 @@ cout<<endl;
 output<<endl;
 
 //END OF PART 4
+
+//BEGIN PART 5
+for(int i=2;i<=16;i*=2){
+  result part_5 = part5(i);
+  cout<<part_5.hits<<","<<part_5.accesses<<"; ";
+  output<<part_5.hits<<","<<part_5.accesses<<"; ";
 }
+cout<<endl;
+output<<endl;
+//END OF PART 5
+
+//BEGIN PART 6
+for(int i=2;i<=16;i*=2){
+  result part_6 = part6(i);
+  cout<<part_6.hits<<","<<part_6.accesses<<"; ";
+  output<<part_6.hits<<","<<part_6.accesses<<"; ";
+}
+cout<<endl;
+output<<endl;
+//END OF PART 6
+}
+
+
+
 //shift = 5 because it's 32 bits per cache line
 //tag  - everything except index, just shift by log2 of num_blocks
 
@@ -251,5 +276,74 @@ result part4(int a){
     }
     retval.accesses++;
   }
+  return retval;
+}
+result part5(int a){
+  result retval;
+  unsigned long long set_size = 32 * a;
+  unsigned long long cache_size = 16384/set_size;
+  retval.hits = 0;
+  retval.accesses = 0;
+  Set * cache = new Set [cache_size];
+  for (int i = 0; i<cache_size;i++){
+    cache[i] = Set(a);
+  }
+  for (unsigned long long i=0;i<lines.size();i++){
+    unsigned long long chopped = lines[i].address() >> 5;
+    unsigned long long index = chopped %cache_size;
+    unsigned long long tag = chopped >> (unsigned long long)log2(cache_size);
+    lines[i].setIndex(index);
+    lines[i].setTag(tag);
+    if(cache[index].insert(lines[i])){
+      retval.hits++;
+    }
+
+    Line temp = Line();
+    temp.setAddress(lines[i].address()+32);
+    unsigned long long temp_chopped = temp.address() >>5;
+    unsigned long long temp_index = temp_chopped % cache_size;
+    unsigned long long temp_tag = temp_chopped >>(unsigned long long)log2(cache_size);
+    temp.setIndex(temp_index);
+    temp.setTag(temp_tag);
+    cache[temp_index].insert(temp);
+
+    retval.accesses++;
+  }
+  delete [] cache;
+  return retval;
+}
+result part6(int a){
+  result retval;
+  unsigned long long set_size = 32 * a;
+  unsigned long long cache_size = 16384/set_size;
+  retval.hits = 0;
+  retval.accesses = 0;
+  Set * cache = new Set [cache_size];
+  for (int i = 0; i<cache_size;i++){
+    cache[i] = Set(a);
+  }
+  for(unsigned long long i = 0;i<lines.size();i++){
+    unsigned long long chopped = lines[i].address() >> 5;
+    unsigned long long index = chopped % cache_size;
+    unsigned long long tag = chopped >>(unsigned long long)log2(cache_size);
+    lines[i].setIndex(index);
+    lines[i].setTag(tag);
+    if(cache[index].insert(lines[i])){
+      retval.hits++;
+    }
+    else{
+      //insert logic here
+      Line temp = Line();
+      temp.setAddress(lines[i].address()+32);
+      unsigned long long temp_chopped = temp.address() >>5;
+      unsigned long long temp_index = temp_chopped % cache_size;
+      unsigned long long temp_tag = temp_chopped >>(unsigned long long)log2(cache_size);
+      temp.setIndex(temp_index);
+      temp.setTag(temp_tag);
+      cache[temp_index].insert(temp);
+    }
+    retval.accesses++;
+  }
+  delete[]cache;
   return retval;
 }
