@@ -7,49 +7,59 @@
 #include"Set.h"
 using namespace std;
 vector<Line>lines;
-const int my_int = 513;
-int tree [9][my_int];
+struct bit{
+  int idx;
+  string temperature;
+};
 struct result{
 public:
   int hits;
   int accesses;
 };
-int hot_cold_util(int status){
-  int num;
-  if (status == -1){ //we had a miss
-    int index = 0;
-    for (int i = 0; i<9;i++){
-      if(tree[i][index] == 1){
-        tree[i][index] = 0;
-        index *=2;
+vector<bit> bits;
+
+void update_tree(int index){
+  int num = 512;
+  int upper = num;
+  int lower = 0;
+  //cout<<"init lower: "<<lower;
+  int lower_left;
+  int upper_left;
+  int lower_right;
+  int upper_right;
+  //int ret_index;
+  for(int i = 0; i<9;i++){
+    lower_left = lower;
+    upper_left = (lower_left+upper)/2;
+    lower_right = upper_left+1;
+    upper_right = upper;
+    if(index<=(num/2)-1 && index>=lower){ //index in lower half
+      //ret_index = (j*2)+1;
+      for(int k = lower_left;k<upper_left;k++){ //set lower half to "hot"
+        bits[k].temperature = "hot";
       }
-      else{
-        tree[i][index] = 1;
-        index = (index *2) +1;
+      for(int l = lower_right;l<upper_right;l++){//set upper half to "cold"
+        bits[l].temperature = "cold";
       }
     }
-    return index;
-  }
-  else{
-    num = 0;
-    if(status %2 !=0){ //if nubmer is odd
-      num  =1;
-      status--;
+    else if(index<=num-1&&index>=(num/2)){ //index in upper half
+      //ret_index = (j*2)+2;
+      for(int k = lower_left;k<upper_left;k++){ //set lower half to "cold"
+        bits[k].temperature = "cold";
+      }
+      for(int l = lower_right;l<upper_right;l++){ //set upper half to "hot"
+        bits[l].temperature = "hot";
+      }
+
     }
-    status/=2;
+    num/=2;
+    //upper = num;
+
   }
-  for(int i = 8;i>=0;i--){
-    tree[i][status] = num;
-    if(status %2!=0){ //right is hot
-      num = 1;
-      status-=1;
-    }
-    else{
-      num = 0; //left is hot
-    }
-    status/=2;
-  }
-  return -1;
+  cout<<num<<endl;
+/*  for(int i = 0; i<bits.size();i++){
+    cout<<bits[i].temperature<<endl;
+  }*/
 }
 result direct_map(int);
 result part2_3(int);
@@ -66,6 +76,16 @@ int main(int argc, char * argv[]){
     //add to list of lines
     lines.push_back(Line(flag,addr));
   }
+  //initializing bit tree
+  for(int i = 0;i<512;i++){
+    //Line temp = Line();
+    //temp.setTag(-1);
+    //cache[i] = temp;
+    bit my_bit;
+    my_bit.idx = i;
+    my_bit.temperature = "cold";
+    bits.push_back(my_bit);
+  }
   //DEBUG: just testing out my line class...
   /*for(int i = 0; i<10; i++){
     cout<<lines[i].flag()<<" "<<lines[i].address()<<endl;
@@ -77,15 +97,16 @@ int main(int argc, char * argv[]){
   //printing out direct map...
 
   //BEGIN PART 1
+
   for (unsigned long long i = 1024; i<=32768;i= i*2){
     if (!(i == 2048 ||i== 8192)){
       result part1 = direct_map(i);
-      cout<<part1.hits<<","<<part1.accesses<<"; ";
+      //cout<<part1.hits<<","<<part1.accesses<<"; ";
       output<<part1.hits<<","<<part1.accesses<<"; ";
 
     }
   }
-  cout<<endl;
+  //cout<<endl;
   output<<endl;
 
   //END OF PART 1
@@ -93,20 +114,20 @@ int main(int argc, char * argv[]){
   //BEGIN PART 2
   for (int i = 2; i<=16;i*=2){
     result part2 = part2_3(i);
-    cout<<part2.hits<<","<<part2.accesses<<"; ";
+    //cout<<part2.hits<<","<<part2.accesses<<"; ";
     output<<part2.hits<<","<<part2.accesses<<"; ";
 
   }
-  cout<<endl;
+  //cout<<endl;
   output<<endl;
 
   //END OF PART 2
 
   //BEGIN PART 3a
-  result part3a = part2_3(512);
-  cout<<part3a.hits<<","<<part3a.accesses<<"; ";
+ result part3a = part2_3(512);
+  //cout<<part3a.hits<<","<<part3a.accesses<<"; ";
   output<<part3a.hits<<","<<part3a.accesses<<"; ";
-  cout<<endl;
+  //cout<<endl;
   output<<endl;
 
   //END OF PART 3a
@@ -123,10 +144,10 @@ int main(int argc, char * argv[]){
 //BEGIN PART 4
 for(int i = 2;i<=16;i*=2){
   result part_4 = part4(i);
-  cout<<part_4.hits<<","<<part_4.accesses<<"; ";
+  //cout<<part_4.hits<<","<<part_4.accesses<<"; ";
   output<<part_4.hits<<","<<part_4.accesses<<"; ";
 }
-cout<<endl;
+//cout<<endl;
 output<<endl;
 
 //END OF PART 4
@@ -134,29 +155,27 @@ output<<endl;
 //BEGIN PART 5
 for(int i=2;i<=16;i*=2){
   result part_5 = part5(i);
-  cout<<part_5.hits<<","<<part_5.accesses<<"; ";
+  //cout<<part_5.hits<<","<<part_5.accesses<<"; ";
   output<<part_5.hits<<","<<part_5.accesses<<"; ";
 }
-cout<<endl;
+//cout<<endl;
 output<<endl;
 //END OF PART 5
 
 //BEGIN PART 6
 for(int i=2;i<=16;i*=2){
   result part_6 = part6(i);
-  cout<<part_6.hits<<","<<part_6.accesses<<"; ";
+  //cout<<part_6.hits<<","<<part_6.accesses<<"; ";
   output<<part_6.hits<<","<<part_6.accesses<<"; ";
 }
-cout<<endl;
+//cout<<endl;
 output<<endl;
 //END OF PART 6
+
+//update_tree(257);
 }
-
-
-
 //shift = 5 because it's 32 bits per cache line
 //tag  - everything except index, just shift by log2 of num_blocks
-
 result direct_map(int size){
   result retval;
   retval.hits = 0;
@@ -215,39 +234,20 @@ result part3b(){
   result retval;
   retval.hits = 0;
   retval.accesses = 0;
+  //initializing cache and bit tree
+
   //if its a miss, send it a -1, if it's a hit, send it(util) the way that you had a hit on
   //intialize everything in tree to 0...
-  for (int i = 0; i<9;i++){
-    for (int j = 0; j<my_int;j++){
-      tree[i][j] = 0;
-    }
-  }
   for (int i = 0;i<lines.size();i++){
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped %512;
     unsigned long long tag = chopped >> (unsigned long long)log2(512);
-    int hot_cold;
-    bool hit;
-    lines[i].setIndex(index);
-    lines[i].setTag(tag);
-    for(int j = 0; j<512;j++){
-      hit = false;
-      if (tag == cache[j].tag()){ //cache hit
-        hit = true;
-        retval.hits++;
-        hot_cold = hot_cold_util(j);
-        break;
-      }
-    }
-    if(!hit){
-      hot_cold = hot_cold_util(-1);
-      cache[hot_cold] = lines[i];
-    }
-
     retval.accesses++;
   }
   return retval;
-}
+
+  }
+
 result part4(int a){
   result retval;
   retval.hits = 0;

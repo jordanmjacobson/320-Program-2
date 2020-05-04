@@ -1,5 +1,5 @@
 FLAGS = -Wall -Wextra -DDebug -g -std=c++14
-
+INPUT = trace1.txt
 all: cache-sim
 
 Line.o: Line.cpp
@@ -18,6 +18,6 @@ clean:
 	rm *.o
 	rm -rf cache-sim output.txt
 run: all
-	./cache-sim trace1.txt output.txt
+	./cache-sim $(INPUT) output.txt
 gdb: all
-	gdb --args ./cache-sim trace1.txt output.txt
+	gdb --args ./cache-sim $(INPUT) output.txt
