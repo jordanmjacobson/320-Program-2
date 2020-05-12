@@ -312,7 +312,7 @@ result part2_3(int a){
 }
 result part3b(){
   //construct the tree
-  construct_tree(0,0,511);
+  construct_tree(0,0,512);
   cout<<"tree constructed"<<endl;
   Line * cache = new Line [512];
   bool cache_full = false;
