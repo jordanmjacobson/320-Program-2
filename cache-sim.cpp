@@ -65,10 +65,9 @@ vector<Node> bits;
     cout<<bits[i].temperature<<endl;
   }*/
 //}
-void update_tree(int index){
 
-}
 void construct_tree(int, int, int);
+void update_tree(int,int,int,int);
 result direct_map(int);
 result part2_3(int);
 result part3b();
@@ -87,6 +86,27 @@ void construct_tree(int idx, int lower, int upper){
   //right call:
   construct_tree((idx *2) +2, ((lower+upper)/2)+1, upper);
 }
+void update_tree(int input, int idx, int lower, int upper){
+  //idx will depend on value of input val...
+  if(upper == lower){
+    return;
+  }
+  bits[idx].temperature = "hot";
+  if (input > (lower+upper)/2 && input <=upper){ // we will go to the right child
+    // first, left child set to cold
+    bits[(2 *idx)+1].temperature = "cold";
+    //now, jump to right child
+    update_tree(input,(2*idx)+2,((lower+upper)/2)+1, upper);
+  }
+  else{ // we will go to the left child
+    //first, set right child to cold
+    bits[(2 *idx)+2].temperature = "cold";
+    //now, jump to right child
+    update_tree(input,(idx *2) +1, lower, (lower+upper)/2);
+  }
+
+}
+
 int main(int argc, char * argv[]){
   ofstream output(argv[2],ofstream::out); //setting up output file object
   string flag;
@@ -109,8 +129,9 @@ int main(int argc, char * argv[]){
 
   //constructing real tree now:
   construct_tree(0,0,511);
+  update_tree(300,0,0,511);
   for(int i = 0; i<bits.size();i++){
-    cout<<"("<<bits[i].lower<<", "<<bits[i].upper<<")"<<endl;
+    cout<<"("<<bits[i].lower<<", "<<bits[i].upper<<")"<<", "<<bits[i].temperature<<endl;
   }
   //DEBUG: just testing out my line class...
   /*for(int i = 0; i<10; i++){
