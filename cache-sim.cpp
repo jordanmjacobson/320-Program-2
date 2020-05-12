@@ -23,8 +23,8 @@ void update_tree(int index){
   int upper = num;
   int lower = 0;
   //cout<<"init lower: "<<lower;
-  int lower_left;
-  int upper_left;
+  int lower_left = 0;
+  int upper_left = 255;
   int lower_right;
   int upper_right;
   //int ret_index;
@@ -35,6 +35,8 @@ void update_tree(int index){
     upper_right = upper;
     if(index<=(num/2)-1 && index>=lower){ //index in lower half
       //ret_index = (j*2)+1;
+      num = (num/2)-1;
+      
       for(int k = lower_left;k<upper_left;k++){ //set lower half to "hot"
         bits[k].temperature = "hot";
       }
