@@ -314,7 +314,7 @@ result part3b(){
   //construct the tree
   construct_tree(0,0,512);
   cout<<"tree constructed"<<endl;
-  Line * cache = new Line [512];
+  Line cache [512];
   bool cache_full = false;
   //setting up blank cache...
   cout<<"pointer created"<<endl;
@@ -356,7 +356,7 @@ result part3b(){
     }
     retval.accesses++;
   }
-  delete [] cache;
+  //delete [] cache;
   return retval;
 
   }
