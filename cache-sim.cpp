@@ -65,17 +65,29 @@ vector<Node> bits;
     cout<<bits[i].temperature<<endl;
   }*/
 //}
-
+bool cache_full(Line *);
 void construct_tree(int, int, int);
-void update_tree(int,int,int,int);
+void update_tree(int, int, int, int);
+int fetch_index(int, int, int);
 result direct_map(int);
 result part2_3(int);
 result part3b();
 result part4(int);
 result part5(int);
 result part6(int);
+bool cache_full(Line * arr){
+  for (int i = 0; i< 512;i++){
+    if (arr[i].tag() == -1){
+      return true;
+    }
+  }
+  return false;
+}
 void construct_tree(int idx, int lower, int upper){
   if (upper == lower){
+    //bits[idx].upper = upper;
+    //bits[idx].lower = lower;
+    bits[idx].temperature = "cold";
     return;
   }
   bits[idx].upper = upper;
@@ -106,7 +118,16 @@ void update_tree(int input, int idx, int lower, int upper){
   }
 
 }
-
+int fetch_index(int idx, int lower, int upper){
+  if(upper == lower){
+    return lower;
+  }
+  if(bits[(idx *2)+1].temperature == "cold"){ // we will go to the left child
+    return fetch_index((idx *2)+1, lower, (lower+upper)/2);
+  }
+  //we will go to the right child
+  return fetch_index((2*idx)+2,((lower+upper)/2)+1, upper);
+}
 int main(int argc, char * argv[]){
   ofstream output(argv[2],ofstream::out); //setting up output file object
   string flag;
@@ -127,12 +148,15 @@ int main(int argc, char * argv[]){
     bits.push_back(my_node);
   }
 
-  //constructing real tree now:
-  construct_tree(0,0,511);
+  // DEBUG: constructing real tree now:
+  /*construct_tree(0,0,511);
   update_tree(300,0,0,511);
   for(int i = 0; i<bits.size();i++){
     cout<<"("<<bits[i].lower<<", "<<bits[i].upper<<")"<<", "<<bits[i].temperature<<endl;
   }
+  //testing fetch_index function
+  int test = fetch_index(0,0,511);
+  cout<<"selected index: "<<test<<endl;
   //DEBUG: just testing out my line class...
   /*for(int i = 0; i<10; i++){
     cout<<lines[i].flag()<<" "<<lines[i].address()<<endl;
@@ -180,11 +204,11 @@ int main(int argc, char * argv[]){
   //END OF PART 3a
 
   //BEGIN PART 3b
-  /*result part3_b = part3b();
+  result part3_b = part3b();
   cout<<part3_b.hits<<","<<part3_b.accesses<<"; ";
   output<<part3_b.hits<<","<<part3_b.accesses<<"; ";
   cout<<endl;
-  output<<endl;*/
+  output<<endl;
 
 //END OF PART 3b
 
@@ -277,20 +301,48 @@ result part2_3(int a){
   return retval;
 }
 result part3b(){
-  Line cache [512];
+  //construct the tree
+  construct_tree(0,0,511);
+
+  Line * cache;
+  //setting up blank cache...
+  for (int i = 0;i<512;i++){//create blank lines
+    cache[i] = Line();
+    cache[i].setTag(-1);
+  }
+
   result retval;
   retval.hits = 0;
   retval.accesses = 0;
-  //initializing cache and bit tree
-
-  //if its a miss, send it a -1, if it's a hit, send it(util) the way that you had a hit on
-  //intialize everything in tree to 0...
   for (int i = 0;i<lines.size();i++){
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped %512;
     unsigned long long tag = chopped >> (unsigned long long)log2(512);
+    for(int j = 0;j<512;j++){
+      if(lines[i].tag() == cache[j].tag()){
+        retval.hits++;
+        update_tree(j,0,0,512);
+      }
+      else{
+        if(!cache_full(cache)){
+          for(int k = 0;k<512;k++){
+            if (cache[k].tag() == -1){
+              cache[k] = lines[i];
+              update_tree(k,0,0,512);
+              break;
+            }
+          }
+        }
+        else{
+          int hotCold = fetch_index(0,0,512);
+          cache[hotCold] = lines[i];
+          update_tree(hotCold,0,0,512);
+        }
+      }
+    }
     retval.accesses++;
   }
+  delete [] cache;
   return retval;
 
   }
@@ -323,6 +375,7 @@ result part4(int a){
     }
     retval.accesses++;
   }
+  delete [] cache;
   return retval;
 }
 result part5(int a){
