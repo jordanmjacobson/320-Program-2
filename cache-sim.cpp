@@ -97,6 +97,7 @@ void construct_tree(int idx, int lower, int upper){
     bits[idx].upper = upper;
     bits[idx].lower = lower;
     bits[idx].temperature = "cold";
+    cout<<"got to this point"<<endl;
     return;
   }
   bits[idx].upper = upper;
