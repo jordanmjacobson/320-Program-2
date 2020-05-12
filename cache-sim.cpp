@@ -335,17 +335,20 @@ result part3b(){
       if(lines[i].tag() == cache[j].tag()){
         retval.hits++;
         update_tree(j,0,0,511);
+        break;
       }
       else{
         int check = free_spot(cache);
         if (check!= -1){
           cache[check] = lines[i];
           update_tree(check,0,0,511);
+          break;
         }
         else{
           int hotCold = fetch_index(0,0,511);
           cache[hotCold] = lines[i];
           update_tree(hotCold,0,0,511);
+          break;
         }
       }
 
