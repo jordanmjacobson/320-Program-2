@@ -94,8 +94,8 @@ int free_spot(Line * arr){
 }
 void construct_tree(int idx, int lower, int upper){
   if (upper == lower){
-    //bits[idx].upper = upper;
-    //bits[idx].lower = lower;
+    bits[idx].upper = upper;
+    bits[idx].lower = lower;
     bits[idx].temperature = "cold";
     return;
   }
@@ -150,7 +150,7 @@ int main(int argc, char * argv[]){
 
 
   //initializing bit tree
-  for(int i = 0;i<512;i++){
+  for(int i = 0;i<513;i++){
     Node my_node;
     my_node.upper  = -1;
     my_node.lower = -1;
@@ -312,15 +312,15 @@ result part2_3(int a){
 result part3b(){
   //construct the tree
   construct_tree(0,0,511);
-  //cout<<"tree constructed"<<endl;
+  cout<<"tree constructed"<<endl;
   Line * cache = new Line [512];
   bool cache_full = false;
   //setting up blank cache...
-  //cout<<"pointer created"<<endl;
+  cout<<"pointer created"<<endl;
   for (int i = 0;i<512;i++){//create blank lines
     cache[i] = Line();
     cache[i].setTag(-1);
-    //cout<<"cache initialized"<<endl;
+    cout<<"cache initialized"<<endl;
   }
 
   result retval;
