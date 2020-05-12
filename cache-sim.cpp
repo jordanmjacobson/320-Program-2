@@ -93,16 +93,16 @@ int free_spot(Line * arr){
   return -1;
 }
 void construct_tree(int idx, int lower, int upper){
-  if (upper == lower){
-    bits[idx].upper = upper;
-    bits[idx].lower = lower;
-    bits[idx].temperature = "cold";
-    cout<<"got to this point"<<endl;
-    return;
-  }
   bits[idx].upper = upper;
   bits[idx].lower = lower;
   bits[idx].temperature = "cold";
+  cout<<"got to this point"<<endl;
+  if (upper == lower){
+    return;
+  }
+  /*bits[idx].upper = upper;
+  bits[idx].lower = lower;
+  bits[idx].temperature = "cold";*/
   //left call:
   construct_tree((idx *2) +1, lower, (lower+upper)/2);
   //right call:
