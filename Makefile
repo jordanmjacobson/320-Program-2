@@ -1,4 +1,4 @@
-FLAGS = -Wall -Wextra -DDebug -g -std=c++14
+FLAGS = -Wall -Wextra -DDebug -g -O3 -std=c++14
 INPUT = trace1.txt
 all: cache-sim
 

@@ -65,6 +65,7 @@ vector<Node> bits;
     cout<<bits[i].temperature<<endl;
   }*/
 //}
+int free_spot(Line *);
 bool cache_full(Line *);
 void construct_tree(int, int, int);
 void update_tree(int, int, int, int);
@@ -75,13 +76,21 @@ result part3b();
 result part4(int);
 result part5(int);
 result part6(int);
-bool cache_full(Line * arr){
+/*bool cache_full(Line * arr){
   for (int i = 0; i< 512;i++){
     if (arr[i].tag() == -1){
       return true;
     }
   }
   return false;
+}*/
+int free_spot(Line * arr){
+  for(int i = 0; i<512;i++){
+    if (arr[i].tag() == -1){
+      return i;
+    }
+  }
+  return -1;
 }
 void construct_tree(int idx, int lower, int upper){
   if (upper == lower){
@@ -303,12 +312,15 @@ result part2_3(int a){
 result part3b(){
   //construct the tree
   construct_tree(0,0,511);
-
-  Line * cache;
+  //cout<<"tree constructed"<<endl;
+  Line * cache = new Line [512];
+  bool cache_full = false;
   //setting up blank cache...
+  //cout<<"pointer created"<<endl;
   for (int i = 0;i<512;i++){//create blank lines
     cache[i] = Line();
     cache[i].setTag(-1);
+    //cout<<"cache initialized"<<endl;
   }
 
   result retval;
@@ -318,27 +330,25 @@ result part3b(){
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped %512;
     unsigned long long tag = chopped >> (unsigned long long)log2(512);
+    lines[i].setTag(tag);
     for(int j = 0;j<512;j++){
       if(lines[i].tag() == cache[j].tag()){
         retval.hits++;
-        update_tree(j,0,0,512);
+        update_tree(j,0,0,511);
       }
       else{
-        if(!cache_full(cache)){
-          for(int k = 0;k<512;k++){
-            if (cache[k].tag() == -1){
-              cache[k] = lines[i];
-              update_tree(k,0,0,512);
-              break;
-            }
-          }
+        int check = free_spot(cache);
+        if (check!= -1){
+          cache[check] = lines[i];
+          update_tree(check,0,0,511);
         }
         else{
-          int hotCold = fetch_index(0,0,512);
+          int hotCold = fetch_index(0,0,511);
           cache[hotCold] = lines[i];
-          update_tree(hotCold,0,0,512);
+          update_tree(hotCold,0,0,511);
         }
       }
+
     }
     retval.accesses++;
   }
