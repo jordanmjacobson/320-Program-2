@@ -7,8 +7,9 @@
 #include"Set.h"
 using namespace std;
 vector<Line>lines;
-struct bit{
-  int idx;
+struct Node{
+  int lower;
+  int upper;
   string temperature;
 };
 struct result{
@@ -16,9 +17,10 @@ public:
   int hits;
   int accesses;
 };
-vector<bit> bits;
 
-void update_tree(int index){
+vector<Node> bits;
+
+/*void update_tree(int index){
   int num = 512;
   int upper = num;
   int lower = 0;
@@ -36,7 +38,7 @@ void update_tree(int index){
     if(index<=(num/2)-1 && index>=lower){ //index in lower half
       //ret_index = (j*2)+1;
       num = (num/2)-1;
-      
+
       for(int k = lower_left;k<upper_left;k++){ //set lower half to "hot"
         bits[k].temperature = "hot";
       }
@@ -62,13 +64,29 @@ void update_tree(int index){
 /*  for(int i = 0; i<bits.size();i++){
     cout<<bits[i].temperature<<endl;
   }*/
+//}
+void update_tree(int index){
+
 }
+void construct_tree(int, int, int);
 result direct_map(int);
 result part2_3(int);
 result part3b();
 result part4(int);
 result part5(int);
 result part6(int);
+void construct_tree(int idx, int lower, int upper){
+  if (upper == lower){
+    return;
+  }
+  bits[idx].upper = upper;
+  bits[idx].lower = lower;
+  bits[idx].temperature = "cold";
+  //left call:
+  construct_tree((idx *2) +1, lower, (lower+upper)/2);
+  //right call:
+  construct_tree((idx *2) +2, ((lower+upper)/2)+1, upper);
+}
 int main(int argc, char * argv[]){
   ofstream output(argv[2],ofstream::out); //setting up output file object
   string flag;
@@ -78,15 +96,21 @@ int main(int argc, char * argv[]){
     //add to list of lines
     lines.push_back(Line(flag,addr));
   }
+
+
+
   //initializing bit tree
   for(int i = 0;i<512;i++){
-    //Line temp = Line();
-    //temp.setTag(-1);
-    //cache[i] = temp;
-    bit my_bit;
-    my_bit.idx = i;
-    my_bit.temperature = "cold";
-    bits.push_back(my_bit);
+    Node my_node;
+    my_node.upper  = -1;
+    my_node.lower = -1;
+    bits.push_back(my_node);
+  }
+
+  //constructing real tree now:
+  construct_tree(0,0,511);
+  for(int i = 0; i<bits.size();i++){
+    cout<<"("<<bits[i].lower<<", "<<bits[i].upper<<")"<<endl;
   }
   //DEBUG: just testing out my line class...
   /*for(int i = 0; i<10; i++){
