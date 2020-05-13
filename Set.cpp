@@ -1,6 +1,6 @@
 #include"Set.h"
 bool Set::insert(Line my_line){
-  for (int i = 0; i<this->assoc; i++){
+  for (unsigned long long i = 0; i<this->assoc; i++){
     if(my_line.tag() == this->ways[i].tag()){ //cache hit
       this->ways[i].update();
       set_idles();

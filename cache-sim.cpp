@@ -86,7 +86,7 @@ result part6(int);
 }*/
 int free_spot(Line * arr){
   for(int i = 0; i<512;i++){
-    if (arr[i].tag() == -1){
+    if (arr[i].flag() == "blank"){
       return i;
     }
   }
@@ -138,7 +138,10 @@ int fetch_index(int idx, int lower, int upper){
     return fetch_index((idx *2)+1, lower, (lower+upper)/2);
   }
   //we will go to the right child
-  return fetch_index((2*idx)+2,((lower+upper)/2)+1, upper);
+  else if(bits[idx].hot_direction == "left"){
+    return fetch_index((2*idx)+2,((lower+upper)/2)+1, upper);
+  }
+
 }
 int main(int argc, char * argv[]){
   ofstream output(argv[2],ofstream::out); //setting up output file object
@@ -322,7 +325,7 @@ result part3b(){
   //cout<<"pointer created"<<endl;
   for (int i = 0;i<512;i++){//create blank lines
     cache[i] = Line();
-    cache[i].setTag(-1);
+    cache[i].setFlag("blank");
     //cout<<"cache initialized"<<endl;
   }
 
@@ -337,8 +340,8 @@ result part3b(){
     lines[i].setTag(tag);
     for(int j = 0;j<512;j++){
       if(lines[i].tag() == cache[j].tag()){
-        retval.hits++;
-        update_tree(j,0,0,511);
+        //retval.hits++;
+        //update_tree(j,0,0,511);
         hit = true;
         break;
       }
@@ -354,10 +357,14 @@ result part3b(){
         cache[hotCold] = lines[i];
         update_tree(hotCold,0,0,511);
       }
+
+    }
+    else{
+      retval.hits++;
     }
 
     retval.accesses++;
-    }
+  }
 
   //delete [] cache;
   return retval;
