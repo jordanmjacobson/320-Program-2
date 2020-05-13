@@ -10,7 +10,7 @@ vector<Line>lines;
 struct Node{
   int lower;
   int upper;
-  string temperature;
+  string hot_direction;
 };
 struct result{
 public:
@@ -102,7 +102,7 @@ void construct_tree(int idx, int lower, int upper){
   }
   bits[idx].upper = upper;
   bits[idx].lower = lower;
-  bits[idx].temperature = "cold";
+  bits[idx].hot_direction = "left";
   cout<<"("<<lower<<", "<<upper<<") index: "<<idx<<endl;
 
   //left call:
@@ -115,16 +115,16 @@ void update_tree(int input, int idx, int lower, int upper){
   if(upper == lower){
     return;
   }
-  bits[idx].temperature = "hot";
+  //bits[idx].temperature = "hot";
   if (input > (lower+upper)/2 && input <=upper){ // we will go to the right child
     // first, left child set to cold
-    bits[(2 *idx)+1].temperature = "cold";
+    bits[idx].hot_direction = "right";
     //now, jump to right child
     update_tree(input,(2*idx)+2,((lower+upper)/2)+1, upper);
   }
   else{ // we will go to the left child
     //first, set right child to cold
-    bits[(2 *idx)+2].temperature = "cold";
+    bits[idx].hot_direction = "left";
     //now, jump to right child
     update_tree(input,(idx *2) +1, lower, (lower+upper)/2);
   }
@@ -134,7 +134,7 @@ int fetch_index(int idx, int lower, int upper){
   if(upper == lower){
     return lower;
   }
-  if(bits[(idx *2)+1].temperature == "cold"){ // we will go to the left child
+  if(bits[idx].hot_direction == "right"){ // we will go to the left child, because the cold direction is left
     return fetch_index((idx *2)+1, lower, (lower+upper)/2);
   }
   //we will go to the right child
@@ -317,7 +317,7 @@ result part3b(){
   construct_tree(0,0,511);
   //cout<<"tree constructed"<<endl;
   Line cache [512];
-  bool cache_full = false;
+  bool hit;
   //setting up blank cache...
   //cout<<"pointer created"<<endl;
   for (int i = 0;i<512;i++){//create blank lines
@@ -330,6 +330,7 @@ result part3b(){
   retval.hits = 0;
   retval.accesses = 0;
   for (unsigned long long i = 0;i<lines.size();i++){
+    hit = false;
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped %512;
     unsigned long long tag = chopped >> (unsigned long long)log2(512);
@@ -338,30 +339,30 @@ result part3b(){
       if(lines[i].tag() == cache[j].tag()){
         retval.hits++;
         update_tree(j,0,0,511);
+        hit = true;
         break;
       }
-      else{
-        int check = free_spot(cache);
-        if (check!= -1){
-          cache[check] = lines[i];
-          update_tree(check,0,0,511);
-          break;
-        }
-        else{
-          int hotCold = fetch_index(0,0,511);
-          cache[hotCold] = lines[i];
-          update_tree(hotCold,0,0,511);
-          break;
-        }
-      }
-
     }
+    if (!hit){
+      int check = free_spot(cache);
+      if (check!= -1){
+        cache[check] = lines[i];
+        update_tree(check,0,0,511);
+      }
+      else{
+        int hotCold = fetch_index(0,0,511);
+        cache[hotCold] = lines[i];
+        update_tree(hotCold,0,0,511);
+      }
+    }
+
     retval.accesses++;
-  }
+    }
+
   //delete [] cache;
   return retval;
 
-  }
+}
 
 result part4(int a){
   result retval;
