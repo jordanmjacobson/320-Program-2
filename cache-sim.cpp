@@ -93,16 +93,18 @@ int free_spot(Line * arr){
   return -1;
 }
 void construct_tree(int idx, int lower, int upper){
-  bits[idx].upper = upper;
+  /*bits[idx].upper = upper;
   bits[idx].lower = lower;
   bits[idx].temperature = "cold";
-  cout<<"got to this point"<<endl;
+  cout<<"got to this point"<<endl;*/
   if (upper == lower){
     return;
   }
-  /*bits[idx].upper = upper;
+  bits[idx].upper = upper;
   bits[idx].lower = lower;
-  bits[idx].temperature = "cold";*/
+  bits[idx].temperature = "cold";
+  cout<<"("<<lower<<", "<<upper<<") index: "<<idx<<endl;
+
   //left call:
   construct_tree((idx *2) +1, lower, (lower+upper)/2);
   //right call:
@@ -215,9 +217,9 @@ int main(int argc, char * argv[]){
 
   //BEGIN PART 3b
   result part3_b = part3b();
-  cout<<part3_b.hits<<","<<part3_b.accesses<<"; ";
+  //cout<<part3_b.hits<<","<<part3_b.accesses<<"; ";
   output<<part3_b.hits<<","<<part3_b.accesses<<"; ";
-  cout<<endl;
+  //cout<<endl;
   output<<endl;
 
 //END OF PART 3b
@@ -312,22 +314,22 @@ result part2_3(int a){
 }
 result part3b(){
   //construct the tree
-  construct_tree(0,0,512);
-  cout<<"tree constructed"<<endl;
+  construct_tree(0,0,511);
+  //cout<<"tree constructed"<<endl;
   Line cache [512];
   bool cache_full = false;
   //setting up blank cache...
-  cout<<"pointer created"<<endl;
+  //cout<<"pointer created"<<endl;
   for (int i = 0;i<512;i++){//create blank lines
     cache[i] = Line();
     cache[i].setTag(-1);
-    cout<<"cache initialized"<<endl;
+    //cout<<"cache initialized"<<endl;
   }
 
   result retval;
   retval.hits = 0;
   retval.accesses = 0;
-  for (int i = 0;i<lines.size();i++){
+  for (unsigned long long i = 0;i<lines.size();i++){
     unsigned long long chopped = lines[i].address() >> 5;
     unsigned long long index = chopped %512;
     unsigned long long tag = chopped >> (unsigned long long)log2(512);
