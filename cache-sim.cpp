@@ -153,8 +153,8 @@ int main(int argc, char * argv[]){
   //initializing bit tree
   for(int i = 0;i<513;i++){
     Node my_node;
-    my_node.upper  = -1;
-    my_node.lower = -1;
+    //my_node.upper  = -1;
+    //my_node.lower = -1;
     bits.push_back(my_node);
   }
 
