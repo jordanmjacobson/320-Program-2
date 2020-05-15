@@ -368,7 +368,7 @@ result part2_3(int a){
 }
 result part3b(){
   //construct the tree
-  construct_tree(0,0,511);
+  //construct_tree(0,0,511);
   //construct_tree_debug(0,0,15);
   //int test = fetch_debug(0,0,15);
   //cout<<"selected index before update: "<<test<<endl;
@@ -392,9 +392,9 @@ result part3b(){
   retval.accesses = 0;
   for (unsigned long long i = 0;i<lines.size();i++){
     //hit = false;
-    unsigned long long chopped = lines[i].address() >> 5;
+    unsigned long long tag = lines[i].address() >> 5;
     //unsigned long long index = chopped %512;
-    unsigned long long tag = chopped >> (unsigned long long)log2(1);
+    //unsigned long long tag = chopped >> (unsigned long long)log2(1);
     lines[i].setTag(tag);
     for(int j = 0;j<512;j++){
       if(tag == cache[j].tag()){
@@ -410,7 +410,7 @@ result part3b(){
     }
     if (!hit){
       int check = free_spot(cache);
-      cout<<"check: "<<check<<endl;
+      //cout<<"check: "<<check<<endl;
       if (check!= -1){
         cache[check] = lines[i];
         update_tree(check,0,0,511);

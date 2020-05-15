@@ -1,5 +1,5 @@
 FLAGS = -Wall -Wextra -DDebug -g -std=c++14
-INPUT = trace1.txt
+INPUT = trace2.txt
 all: cache-sim
 
 Line.o: Line.cpp
